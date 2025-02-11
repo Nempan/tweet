@@ -1,0 +1,75 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<main>
+  <h1>{{ title }}</h1>
+  <p>{{ message }}</p>
+  <ul class="tweets">
+    {% for tweet in tweets %}
+      <li class="tweet" data-tweet-id="{{ tweet.id }}">
+        <article>
+          <header>
+            <h2>{{ tweet.name }}</h2>
+            <time datetime="{{ tweet.updated_at }}">{{ tweet.updated_at }}</time>
+          </header>
+          <p>{{ tweet.message }}</p>
+          <footer>
+            <ul>
+              <li>Shared</li>
+              <li>Reply</li>
+              <li>
+                <button class="favorite-btn">
+                  <span class="star">☆</span> Favourite
+                </button>
+              </li>
+              <div class="box">
+                <li>
+                  <a href="/tweets/{{ tweet.id }}/delete" class="normal-link">Ta bort</a>
+                </li>
+              </div>
+            </ul>
+          </footer>
+        </article>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="nytt"><a href="/skicka" class="normal-link">Skriv något</a></div>
+</main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const favoriteButtons = document.querySelectorAll(".favorite-btn");
+
+    // Load favorite states from localStorage
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+
+    favoriteButtons.forEach((button) => {
+      const tweetElement = button.closest(".tweet");
+      const tweetId = tweetElement.dataset.tweetId;
+
+      // Set initial state from localStorage
+      if (favorites[tweetId]) {
+        button.classList.add("active");
+        button.querySelector(".star").textContent = "★"; // Filled star
+      }
+
+      // Handle button click
+      button.addEventListener("click", () => {
+        const isFavorited = button.classList.toggle("active");
+
+        // Update button appearance
+        button.querySelector(".star").textContent = isFavorited ? "★" : "☆";
+
+        // Save/remove the favorite state in localStorage
+        if (isFavorited) {
+          favorites[tweetId] = true;
+        } else {
+          delete favorites[tweetId];
+        }
+
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+      });
+    });
+  });
+</script>
+{% endblock %}

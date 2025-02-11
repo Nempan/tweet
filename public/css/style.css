@@ -1,0 +1,130 @@
+body {
+  font-family: sans-serif;
+  font-size: 1.2rem;
+}
+
+main {
+  width: min(100% - 3rem, var(--container-max, 60ch));
+  margin-inline: auto;
+}
+
+.tweets {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tweet {
+  margin-bottom: 1rem;
+}
+
+.tweet header {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.tweet footer {
+  padding-top: 1rem;
+}
+
+.tweet footer ul {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container {
+  max-width: 80ch;
+  margin-inline: auto;
+}
+
+.box {
+  
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: rgb(228, 0, 0);
+}
+
+.nytt {
+  position: fixed;
+  bottom: 100px; /* Distance from the top of the viewport */
+  right: 200px; /* Distance from the left of the viewport */
+  background-color: #002fff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(1.4);
+  transition: 0.5s ease-out;
+}
+
+.nytt:hover {
+  transform: scale(1.6);
+  transition: 0.5s ease-in-out;
+}
+
+.normal-link {
+  text-decoration: none; 
+  color: white; 
+  font: inherit; 
+  transition: 0.5s ease-out;
+}
+
+.normal-link:hover {
+  text-decoration: none;
+  color: rgb(212, 208, 208);
+  font-size: 1.3rem;
+  transition: 0.5s 
+  
+}
+
+.star {
+  width: 20px;  
+  aspect-ratio: 1;
+  background: #F8CA00;
+  clip-path: polygon(50% 0,
+    calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))),
+    calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))),
+    calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))),
+    calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))) 
+   ); 
+  
+}
+
+
+
+
+
+.favorite-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.favorite-btn .star {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.favorite-btn.active {
+  color: #ffeb3b;
+  border-color: #ffeb3b;
+}
+
+.favorite-btn.active .star {
+  content: '★'; /* Filled star */
+}
