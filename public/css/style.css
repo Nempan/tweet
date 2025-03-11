@@ -53,6 +53,13 @@ main {
   background-color: rgb(228, 0, 0);
 }
 
+.box2 {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: rgb(4, 123, 160);
+}
+
 .nytt {
   position: fixed;
   bottom: 100px; /* Distance from the top of the viewport */
@@ -86,45 +93,8 @@ main {
   
 }
 
-.star {
-  width: 20px;  
-  aspect-ratio: 1;
-  background: #F8CA00;
-  clip-path: polygon(50% 0,
-    calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))),
-    calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))),
-    calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))),
-    calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))) 
-   ); 
-  
-}
 
 
 
 
 
-.favorite-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 10px;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #333;
-}
-
-.favorite-btn .star {
-  font-size: 18px;
-  margin-right: 5px;
-}
-
-.favorite-btn.active {
-  color: #ffeb3b;
-  border-color: #ffeb3b;
-}
-
-.favorite-btn.active .star {
-  content: '★'; /* Filled star */
-}
