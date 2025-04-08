@@ -4,11 +4,9 @@
 <main>
   <h1>{{ title }}</h1>
   <p>{{ message }}</p>
-  <div class="loggain">
-    <h2> Du måste logga in för att få tillgång till alla fuktioner</h2>
-  </div>
   <ul class="tweets">
     {% for tweet in tweets %}
+      <li class="tweet" data-tweet-id="{{ tweet.id }}">
         <article>
           <header>
             <h2>{{ tweet.name }}</h2>
@@ -19,15 +17,19 @@
             <ul>
               <li>Shared</li>
               <li>Reply</li>
-              
+              <li>
+                <button class="favorite-btn">
+                  <span class="star">☆</span> Favourite
+                </button>
+              </li>
               <div class="box2">
                 <li>
-                  <a href="/login" class="normal-link">Ändra</a>
+                  <a href="/tweets/{{ tweet.id }}/edit" class="normal-link">Ändra</a>
                 </li>
               </div>
               <div class="box">
                 <li>
-                  <a href="/login" class="normal-link">Ta bort</a>
+                  <a href="/tweets/{{ tweet.id }}/delete" class="normal-link">Ta bort</a>
 
                   
                 </li>
@@ -40,7 +42,7 @@
       </li>
     {% endfor %}
   </ul>
-  
+  <div class="nytt"><a href="/tweets/skicka" class="normal-link">Skriv något</a></div>
 </main>
 
 

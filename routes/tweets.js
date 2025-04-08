@@ -1,11 +1,46 @@
 import express from "express"
-import pool from "../db.js"
+import db from "../db-sqlite.js"
+import bcrypt from "bcrypt"
+
+
 import { body, matchedData, validationResult } from "express-validator"
 
 
 const router = express.Router()
 
-router.get("/:id/delete", async(req, res) => {
+function isAuthenticated(req, res, next) {
+  if (req.session.user) {
+      return next(); 
+  }
+  res.redirect("/login"); 
+}
+
+
+router.get("/inloggad",isAuthenticated, async (req, res) => {
+  if (req.session.views) {
+    req.session.views++
+  } else {
+    req.session.views = 1
+  }
+  const tweets = await db.all(`
+    SELECT tweet.*, user.name
+    FROM tweet
+    JOIN user ON tweet.author_id = user.id
+    ORDER BY updated_at DESC;`)
+
+    const formattedTweets = tweets.map(tweet => ({
+      ...tweet,
+      date: formatDistanceToNow(new Date(tweet.updated_at), { addSuffix: true }),
+      }))
+
+  res.render("inloggad.njk", {
+    title: "Kvitter",
+    tweets: tweets,
+  })
+})
+
+
+router.get("/:id/delete",isAuthenticated, async(req, res) => {
 
     const id = req.params.id
 
@@ -13,25 +48,25 @@ router.get("/:id/delete", async(req, res) => {
         return res.status(400).send("Invalid ID")
       }
 
-    await pool.promise().query("DELETE FROM tweet WHERE id = ?", [id])
+    db.all("DELETE FROM tweet WHERE id = ?", id)
 
-    res.redirect("/")
+    res.redirect("/inloggad")
 })
 
 
-router.get("/:id/edit", async (req, res) => {
+router.get("/:id/edit", isAuthenticated, async (req, res) => {
   const id = req.params.id
   if (!Number.isInteger(Number(id))) {
     return res.status(400).send("Invalid ID")
   }
-  const [rows] = await pool.promise().query("SELECT * FROM tweet WHERE id = ?", [id])
+  const [rows] = db.all("SELECT * FROM tweet WHERE id = ?", id)
   if (rows.length === 0) {
     return res.status(404).send("Tweet not found")
   }
-  res.render("edit.njk", { tweet: rows[0] })
+  res.render("edit.njk", { tweet: rows })
 })
 
-router.post("/edit",
+router.post("/edit",isAuthenticated,
   body("id").isInt(),
   body("message").isLength({ min: 1, max: 130 }),
   async (req, res) => {
@@ -41,8 +76,28 @@ router.post("/edit",
   }
 
   const { id, message } = matchedData(req)
-  await pool.promise().query("UPDATE tweet SET message = ? WHERE id = ?", [message, id])
-  res.redirect("/")
+  db.all("UPDATE tweet SET message = ? WHERE id = ?", message, id)
+  res.redirect("/inloggad")
+})
+
+
+
+router.get("/skicka",isAuthenticated, (req, res) => {
+  res.render("skicka.njk", {
+    title: "Kvitter - New post",
+  })
+})
+
+router.post("/skicka", isAuthenticated, async (req, res) => {
+  const message = req.body.message
+  const author_id = 1
+  await pool
+    .promise()
+    .query("INSERT INTO tweet (message, author_id) VALUES (?, ?)", 
+      message,
+      author_id,
+    )
+  res.redirect("/inloggad")
 })
 
 export default router
