@@ -1,6 +1,7 @@
 import express from "express"
 import db from "../db-sqlite.js"
 import bcrypt from "bcrypt"
+import { formatDistanceToNow } from "date-fns"
 
 
 import { body, matchedData, validationResult } from "express-validator"
@@ -11,8 +12,10 @@ const router = express.Router()
 function isAuthenticated(req, res, next) {
   if (req.session.user) {
       return next(); 
-  }
+  } else {
+
   res.redirect("/login"); 
+  }
 }
 
 
@@ -26,18 +29,22 @@ router.get("/inloggad",isAuthenticated, async (req, res) => {
     SELECT tweet.*, user.name
     FROM tweet
     JOIN user ON tweet.author_id = user.id
-    ORDER BY updated_at DESC;`)
+    ORDER BY updated_at DESC;
+    ;`)
 
+    // Format the dates on the backend
     const formattedTweets = tweets.map(tweet => ({
-      ...tweet,
-      date: formatDistanceToNow(new Date(tweet.updated_at), { addSuffix: true }),
-      }))
+        ...tweet,
+        date: formatDistanceToNow(new Date(tweet.updated_at), { addSuffix: true }),
+    }))
 
-  res.render("inloggad.njk", {
-    title: "Kvitter",
-    tweets: tweets,
-  })
+    res.render("index.njk", {
+        title: "Fireplace - All posts",
+        message: "This is fine...",
+        tweets: formattedTweets,
+    })
 })
+
 
 
 router.get("/:id/delete",isAuthenticated, async(req, res) => {
@@ -91,9 +98,7 @@ router.get("/skicka",isAuthenticated, (req, res) => {
 router.post("/skicka", isAuthenticated, async (req, res) => {
   const message = req.body.message
   const author_id = 1
-  await pool
-    .promise()
-    .query("INSERT INTO tweet (message, author_id) VALUES (?, ?)", 
+  await db.run("INSERT INTO tweet (message, author_id) VALUES (?, ?)", 
       message,
       author_id,
     )
