@@ -37,12 +37,14 @@ router.get("/inloggad",isAuthenticated, async (req, res) => {
         ...tweet,
         date: formatDistanceToNow(new Date(tweet.updated_at), { addSuffix: true }),
     }))
+    console.log("Sessionen i /tweets/inloggad:", req.session);
 
-    res.render("index.njk", {
+    res.render("inloggad.njk", {
         title: "Fireplace - All posts",
-        message: "This is fine...",
+        message: "",
         tweets: formattedTweets,
-    })
+        user: req.session.user
+    }) 
 })
 
 
@@ -57,7 +59,7 @@ router.get("/:id/delete",isAuthenticated, async(req, res) => {
 
     db.all("DELETE FROM tweet WHERE id = ?", id)
 
-    res.redirect("/inloggad")
+    res.redirect("/tweets/inloggad")
 })
 
 
@@ -66,17 +68,23 @@ router.get("/:id/edit", isAuthenticated, async (req, res) => {
   if (!Number.isInteger(Number(id))) {
     return res.status(400).send("Invalid ID")
   }
-  const [rows] = db.all("SELECT * FROM tweet WHERE id = ?", id)
-  if (rows.length === 0) {
+  console.log("Session i edit:", req.session);
+
+  const row = await db.get("SELECT * FROM tweet WHERE id = ?", id)
+  if (!row) {
     return res.status(404).send("Tweet not found")
   }
-  res.render("edit.njk", { tweet: rows })
+  
+  res.render("edit.njk", { tweet: row })
+  
 })
 
 router.post("/edit",isAuthenticated,
   body("id").isInt(),
   body("message").isLength({ min: 1, max: 130 }),
   async (req, res) => {
+  console.log("Session i edit:", req.session);
+
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(400).send("Invalid input")
@@ -84,7 +92,7 @@ router.post("/edit",isAuthenticated,
 
   const { id, message } = matchedData(req)
   db.all("UPDATE tweet SET message = ? WHERE id = ?", message, id)
-  res.redirect("/inloggad")
+  res.redirect("/tweets/inloggad")
 })
 
 
@@ -102,7 +110,7 @@ router.post("/skicka", isAuthenticated, async (req, res) => {
       message,
       author_id,
     )
-  res.redirect("/inloggad")
+  res.redirect("/tweets/inloggad")
 })
 
 export default router

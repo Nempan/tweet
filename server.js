@@ -26,6 +26,10 @@ app.use(session({
   cookie: { sameSite: true }
 }))
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  next();
+});
 
 app.use("/", indexRouter)
 app.use("/tweets", tweetsRouter)

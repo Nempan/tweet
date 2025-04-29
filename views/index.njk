@@ -4,9 +4,13 @@
 <main>
   <h1>{{ title }}</h1>
   <p>{{ message }}</p>
-  <div class="loggain">
-    <h2> Du måste logga in för att få tillgång till alla fuktioner</h2>
-  </div>
+
+  {% if not user %}
+    <div class="loggain">
+      <h2> Du måste logga in för att få tillgång till alla funktioner</h2>
+    </div>
+  {% endif %}
+
   <ul class="tweets">
     {% for tweet in tweets %}
         <article>
@@ -20,19 +24,25 @@
               <li>Shared</li>
               <li>Reply</li>
               
-              <div class="box2">
-                <li>
-                  <a href="/login" class="normal-link">Ändra</a>
-                </li>
-              </div>
-              <div class="box">
-                <li>
-                  <a href="/login" class="normal-link">Ta bort</a>
-
-                  
-                </li>
-                
-              </div>
+              {% if user %}
+                <div class="box2">
+                  <li>
+                    <a href="/tweets/{{ tweet.id }}/edit" class="normal-link">Ändra</a>
+                  </li>
+                </div>
+                <div class="box">
+                  <li>
+                    <a href="/tweets/{{ tweet.id }}/delete" class="normal-link">Ta bort</a>
+                  </li>
+                </div>
+              {% else %}
+                <div class="box2">
+                  <li><a href="/login" class="normal-link">Ändra</a></li>
+                </div>
+                <div class="box">
+                  <li><a href="/login" class="normal-link">Ta bort</a></li>
+                </div>
+              {% endif %}
               
             </ul>
           </footer>
@@ -42,6 +52,4 @@
   </ul>
   
 </main>
-
-
 {% endblock %}

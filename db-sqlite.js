@@ -35,6 +35,6 @@ const hash = '$2a$10$lPz9cq0qOI/n6achdioonOS0LV8WFkRA3pMLQIPAI/jhyu4UFR2W6'
 
 await db.run('INSERT INTO user (name, password) VALUES (?, ?)', 'nemo', hash);
 
-
+ 
 // Export the database connection
 export default db;
