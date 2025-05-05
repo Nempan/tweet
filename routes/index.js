@@ -5,12 +5,19 @@ import { formatDistanceToNow } from "date-fns"
 
 const router = express.Router()
 
-router.get("/", async (req, res) => {
-  if (req.session.views) {
-    req.session.views++
+function ejInloggad (req, res, next){
+  if (req.session.user) {
+    res.redirect("/tweets/inloggad"); 
+      
   } else {
-    req.session.views = 1
+    next(); 
+  
   }
+}
+
+router.get("/",ejInloggad, async (req, res, next) => {
+
+
  
   const tweets = await db.all(`
     SELECT tweet.*, user.name
@@ -27,6 +34,10 @@ router.get("/", async (req, res) => {
     title: "Kvitter",
     tweets: tweets,
   })
+  
+
+
 })
+
 
 export default router

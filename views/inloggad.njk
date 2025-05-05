@@ -6,8 +6,10 @@
   <p>{{ message }}</p>
   <ul class="tweets">
     {% for tweet in tweets %}
+    <div class="container">
       <li class="tweet" data-tweet-id="{{ tweet.id }}">
         <article>
+          
           <header>
             <h2>{{ tweet.name }}</h2>
             <time datetime="{{ tweet.updated_at }}">{{ tweet.updated_at }}</time>
@@ -40,6 +42,7 @@
           </footer>
         </article>
       </li>
+    </div>
     {% endfor %}
   </ul>
   <div class="nytt"><a href="/tweets/skicka" class="normal-link">Skriv något</a></div>
