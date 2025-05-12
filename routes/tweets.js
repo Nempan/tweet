@@ -104,13 +104,18 @@ router.get("/skicka",isAuthenticated, (req, res) => {
 })
 
 router.post("/skicka", isAuthenticated, async (req, res) => {
-  const message = req.body.message
-  const author_id = 1
-  await db.run("INSERT INTO tweet (message, author_id) VALUES (?, ?)", 
-      message,
-      author_id,
-    )
-  res.redirect("/tweets/inloggad")
-})
+  const message = req.body.message;
+  const authorId = req.session.user?.id;
+
+  try {
+    await db.run("INSERT INTO tweet (message, author_id) VALUES (?, ?)", message, authorId);
+    res.redirect("/tweets/inloggad");
+  } catch (err) {
+    console.error("Databasfel:", err);
+    res.status(500).send("Något gick fel vid att skicka meddelandet.");
+  }
+});
+
+
 
 export default router

@@ -42,6 +42,7 @@ router.post("/", async (req, res) => {
 
         
         req.session.user = { id: dbUser.id, name: dbUser.name };
+        req.session.username = dbUser.name
         res.redirect("/tweets/inloggad"); 
     } catch (error) {
         console.error(error);

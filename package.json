@@ -25,6 +25,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.13.0",
     "nunjucks": "^3.2.4",
+    "sanitize-html": "^2.16.0",
     "session": "^0.1.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
