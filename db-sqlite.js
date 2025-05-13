@@ -13,7 +13,7 @@ const hash = '$2a$10$lPz9cq0qOI/n6achdioonOS0LV8WFkRA3pMLQIPAI/jhyu4UFR2W6'
 await db.exec(`
   CREATE TABLE IF NOT EXISTS tweet (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    message TEXT,
+    message VARCHAR(130),
     author_id INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
