@@ -49,52 +49,63 @@ router.get("/inloggad",isAuthenticated, async (req, res) => {
 
 
 
-router.get("/:id/delete",isAuthenticated, async(req, res) => {
+router.get("/:id/delete", isAuthenticated, async (req, res) => {
+  const id = parseInt(req.params.id)
 
-    const id = req.params.id
-
-    if (!Number.isInteger(Number(id))) {
-        return res.status(400).send("Invalid ID")
-      }
-
-    db.all("DELETE FROM tweet WHERE id = ?", id)
-
-    res.redirect("/tweets/inloggad")
-})
-
-
-router.get("/:id/edit", isAuthenticated, async (req, res) => {
-  const id = req.params.id
-  if (!Number.isInteger(Number(id))) {
+  if (!Number.isInteger(id)) {
     return res.status(400).send("Invalid ID")
   }
-  console.log("Session i edit:", req.session);
 
-  const row = await db.get("SELECT * FROM tweet WHERE id = ?", id)
-  if (!row) {
-    return res.status(404).send("Tweet not found")
-  }
+  const tweet = await db.get("SELECT * FROM tweet WHERE id = ?", id)
+
   
-  res.render("edit.njk", { tweet: row })
-  
-})
-
-router.post("/edit",isAuthenticated,
-  body("id").isInt(),
-  body("message").isLength({ min: 1, max: 130 }),
-  async (req, res) => {
-  console.log("Session i edit:", req.session);
-
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).send("Invalid input")
+  if (!tweet || tweet.author_id !== req.session.user.id) {
+    return res.status(403).send("Du har inte rättigheter att ta bort detta inlägg.")
   }
 
-  const { id, message } = matchedData(req)
-  db.all("UPDATE tweet SET message = ? WHERE id = ?", message, id)
+  await db.run("DELETE FROM tweet WHERE id = ?", id)
   res.redirect("/tweets/inloggad")
 })
 
+
+
+router.get("/:id/edit", isAuthenticated, async (req, res) => {
+  const id = parseInt(req.params.id)
+
+  if (!Number.isInteger(id)) {
+    return res.status(400).send("Invalid ID")
+  }
+
+  const tweet = await db.get("SELECT * FROM tweet WHERE id = ?", id)
+
+  if (!tweet || tweet.author_id !== req.session.user.id) {
+    return res.status(403).send("Du får inte redigera detta inlägg.")
+  }
+
+  res.render("edit.njk", { tweet })
+})
+
+router.post("/edit", isAuthenticated,
+  body("id").isInt(),
+  body("message").isLength({ min: 1, max: 130 }).trim().escape(),
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send("Ogiltig indata")
+    }
+
+    const { id, message } = matchedData(req)
+
+    const tweet = await db.get("SELECT * FROM tweet WHERE id = ?", id)
+
+    if (!tweet || tweet.author_id !== req.session.user.id) {
+      return res.status(403).send("Du får inte redigera detta inlägg.")
+    }
+
+    await db.run("UPDATE tweet SET message = ? WHERE id = ?", message, id)
+    res.redirect("/tweets/inloggad")
+  }
+)
 
 
 router.get("/skicka",isAuthenticated, (req, res) => {
@@ -108,7 +119,7 @@ router.post("/skicka", isAuthenticated, async (req, res) => {
   const authorId = req.session.user?.id;
 
   try {
-    await db.run("INSERT INTO tweet (message, author_id) VALUES (?, ?)", message, authorId);
+    await db.all("INSERT INTO tweet (message, author_id) VALUES (?, ?)", message, authorId);
     res.redirect("/tweets/inloggad");
   } catch (err) {
     console.error("Databasfel:", err);
