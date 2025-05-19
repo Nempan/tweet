@@ -7,7 +7,7 @@ const db = await open({
   driver: sqlite3.Database,
 });
 
-const hash = '$2a$10$lPz9cq0qOI/n6achdioonOS0LV8WFkRA3pMLQIPAI/jhyu4UFR2W6'
+
 
 // Create the tweet table if it doesn't exist
 await db.exec(`
