@@ -2,12 +2,18 @@ import express from "express"
 import db from "../db-sqlite.js"
 import bcrypt from "bcrypt"
 import { formatDistanceToNow } from "date-fns"
+import rateLimit from "express-rate-limit"
 
 
 import { body, matchedData, validationResult } from "express-validator"
 
 
 const router = express.Router()
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+})
 
 function isAuthenticated(req, res, next) {
   if (req.session.user) {
@@ -69,7 +75,7 @@ router.get("/:id/delete", isAuthenticated, async (req, res) => {
 
 
 
-router.get("/:id/edit", isAuthenticated, async (req, res) => {
+router.get("/:id/edit", limiter, isAuthenticated, async (req, res) => {
   const id = parseInt(req.params.id)
 
   if (!Number.isInteger(id)) {
@@ -85,7 +91,7 @@ router.get("/:id/edit", isAuthenticated, async (req, res) => {
   res.render("edit.njk", { tweet })
 })
 
-router.post("/edit", isAuthenticated,
+router.post("/edit", limiter, isAuthenticated,
   body("id").isInt(),
   body("message").isLength({ min: 1, max: 130 }).trim().escape(),
   async (req, res) => {
@@ -108,13 +114,13 @@ router.post("/edit", isAuthenticated,
 )
 
 
-router.get("/skicka",isAuthenticated, (req, res) => {
+router.get("/skicka", isAuthenticated, (req, res) => {
   res.render("skicka.njk", {
     title: "Kvitter - New post",
   })
 })
 
-router.post("/skicka", isAuthenticated, async (req, res) => {
+router.post("/skicka", limiter, isAuthenticated, async (req, res) => {
   const message = req.body.message;
   const authorId = req.session.user?.id;
 

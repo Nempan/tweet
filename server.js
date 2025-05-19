@@ -3,6 +3,7 @@ import express from "express"
 import nunjucks from "nunjucks"
 import bodyParser from "body-parser"
 import session from "express-session";
+import helmet from "helmet"
 
 import indexRouter from "./routes/index.js"
 import tweetsRouter from "./routes/tweets.js"
@@ -18,6 +19,7 @@ nunjucks.configure("views", {
 
 app.use(express.static("public"))
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(helmet())
 
 app.use(session({
   secret: "keyboard cat",

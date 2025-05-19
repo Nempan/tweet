@@ -1,9 +1,15 @@
 import db from "../db-sqlite.js"
 import bcrypt from "bcrypt"
 import express from "express"
+import rateLimit from "express-rate-limit"
+
 
 const router = express.Router()
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+})
 
 router.get("/", async (req, res) => {
   
@@ -17,7 +23,7 @@ router.get("/", async (req, res) => {
     
 })
   
-router.post("/", async (req, res) => {
+router.post("/", limiter, async (req, res) => {
 
     const { user, password } = req.body; 
   
