@@ -9,8 +9,9 @@ main {
 }
 
 .tweets {
-  padding: 0;
-  margin: 0;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  margin: 1rem;
   list-style: none;
 }
 
@@ -47,11 +48,21 @@ main {
 .tweet ul {
   grid-row: 3;
   grid-column: 1/5;
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
+.tweet ul li {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .container {
   max-width: 80ch;
   margin-inline: auto;
+
+
 }
 
 .box {

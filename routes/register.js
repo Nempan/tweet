@@ -20,6 +20,8 @@ router.get("/", async (req, res) => {
 
     res.render("register.njk", {
         title: "Registrera dig",
+        error: null,
+        oldInput: req.body
          
     })
     
@@ -28,29 +30,33 @@ router.get("/", async (req, res) => {
 
 router.post(
   "/", limiter,
-  body("name").trim().isLength({ min: 1, max: 30 }).escape(),
-  body("password").isLength({ min: 8 }),
+  body("name").trim().isLength({ min: 1, max: 30 }).escape().withMessage("Användarnamnet måste vara mellan 1–30 tecken."),
+  body("password").isLength({ min: 8 }).withMessage("Lösenordet måste vara minst 8 tecken."),
   async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).send("För kort eller långt användarnamn eller lösenord")
+      const errorMessages = errors.array().map(e => e.msg).join("<br>")
+      return res.render("register.njk", {
+        title: "Registrera dig",
+        error: errorMessages,
+        oldInput: req.body
+      })
     }
 
     const { name, password } = matchedData(req)
 
     try {
-      
       const existing = await db.get("SELECT * FROM user WHERE name = ?", name)
       if (existing) {
-        return res.status(400).send("Användarnamnet är redan taget")
+        return res.render("register.njk", {
+          title: "Registrera dig",
+          error: "Användarnamnet är redan taget.",
+          oldInput: req.body
+        })
       }
 
-     
       const hashedPassword = await bcrypt.hash(password, 10)
-
-      
       await db.run("INSERT INTO user (name, password) VALUES (?, ?)", name, hashedPassword)
-
       res.redirect("/login")
     } catch (err) {
       console.error("Registreringsfel:", err)
@@ -58,6 +64,7 @@ router.post(
     }
   }
 )
+
 
 
 export default router

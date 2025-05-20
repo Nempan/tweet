@@ -1,17 +1,25 @@
 {% extends "layout.njk" %}
 
 {% block content %}
-<main class="container region flow">
-  <h1>{{ title }}</h1>
-  <form action="/register" method="post">
-    <label for="name">Användarnamn</label>
-    <input id="name" name="name" required></input>
 
-    <label for="password">Lösenord</label>
-    <input id="password" name="password" required></input> 
+<h1>Registrera dig</h1>
 
-    <button type="submit">Registrera</button>
-  </form>
-</main>
+{% if error %}
+  <div style="color: red; margin-bottom: 1em;">
+    {{ error | safe }}
+  </div>
+{% endif %}
+
+<form method="POST">
+  <label for="name">Användarnamn:</label>
+  <input type="text" name="name" value="{{ oldInput.name or '' }}" required />
+
+  <label for="password">Lösenord:</label>
+  <input type="password" name="password" required />
+
+  <button type="submit">Registrera</button>
+</form>
+
+<a href="/login">Logga in</a>
+
 {% endblock %}
-
