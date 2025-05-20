@@ -1,0 +1,17 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<main class="container region flow">
+  <h1>{{ title }}</h1>
+  <form action="/register" method="post">
+    <label for="name">Användarnamn</label>
+    <input id="name" name="name" required></input>
+
+    <label for="password">Lösenord</label>
+    <input id="password" name="password" required></input> 
+
+    <button type="submit">Registrera</button>
+  </form>
+</main>
+{% endblock %}
+
